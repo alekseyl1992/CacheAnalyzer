@@ -3,6 +3,8 @@
 
 class Plotter
 {
+private:
+
 public:
     Plotter();
 };
