@@ -5,7 +5,7 @@
 #include <utility>
 #include <string>
 
-typedef std::vector<std::pair<double, long>> PlotData;
+typedef std::vector<std::pair<double, size_t>> PlotData;
 struct Plot {
     std::string label;
     PlotData data;

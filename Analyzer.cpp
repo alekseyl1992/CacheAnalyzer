@@ -1,29 +1,24 @@
-#include "analyzer.h"
-Analyzer *Analyzer::instance = nullptr;
+#include "Analyzer.h"
 
-Analyzer &Analyzer::getInstance()
-{
-    if (instance == nullptr)
-        instance = new Analyzer();
-
-    return *instance;
-}
-
-PlotData Analyzer::sequentialAccess(size_t padSize)
+template <size_t payloadSize>
+PlotData Analyzer<payloadSize>::sequentialAccess()
 {
 
 }
 
-PlotData Analyzer::randomAccess(size_t padSize)
+template <size_t payloadSize>
+PlotData Analyzer<payloadSize>::randomAccess()
 {
 
 }
 
-Analyzer::Analyzer()
+template <size_t payloadSize>
+Analyzer<payloadSize>::Analyzer()
 {
 }
 
-Analyzer::~Analyzer()
+template <size_t payloadSize>
+Analyzer<payloadSize>::~Analyzer()
 {
 
 }
