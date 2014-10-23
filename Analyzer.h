@@ -4,6 +4,7 @@
 #include <iostream>
 #include <algorithm>
 #include <functional>
+#include <stdint.h>
 #include <boost/preprocessor/repetition/repeat.hpp>
 #include "PlotData.h"
 #include "Measure.h"
@@ -16,13 +17,8 @@ class Analyzer
 {
 private:
     struct ArrayElement {
-        ArrayElement(ArrayElement *next)
-            : next(next)
-        {}
-
         ArrayElement *next = nullptr;
-
-        long payload[payloadSize];
+        std::conditional<sizeof(ArrayElement *) == 4, uint32_t, uint64_t> payload[payloadSize];
     };
 
 public:
@@ -43,6 +39,11 @@ public:
     ~Analyzer()
     {
 
+    }
+
+    size_t getPayloadSize() const
+    {
+        return payloadSize;
     }
 
     double measureAccessTime(class ArrayElement *first, size_t arraySize)
@@ -88,7 +89,7 @@ public:
         return access([](ArrayElement *first, size_t arraySize) {
             //link sequentialy
             ArrayElement *cur = first;
-            for (size_t i = 0; i < arraySize - 1; ++i) {
+            for (size_t i = 1; i < arraySize; ++i) {
                 cur->next = first + i;
                 ++cur;
             }
@@ -108,7 +109,7 @@ public:
             std::shuffle(offsets.begin(), offsets.end(), g);
 
             ArrayElement *cur = first;
-            for (size_t i = 0; i < arraySize; ++i) {
+            for (size_t i = 1; i < arraySize; ++i) {
                 cur->next = first + offsets[i];
                 ++cur;
             }

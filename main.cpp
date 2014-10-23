@@ -3,10 +3,13 @@
 #include "Analyzer.h"
 #include "Plotter.h"
 
-template <size_t... sizes> createAnalyzers(size_t minArraySizePower,
-                                           size_t maxArraySizePower,
-                                           size_t experimentsCount,
-                                           size_t accessCount)
+std::vector<Plot> sequentialPlots, randomPlots;
+
+template <size_t... sizes>
+void createAnalyzers(size_t minArraySizePower,
+                     size_t maxArraySizePower,
+                     size_t experimentsCount,
+                     size_t accessCount)
 {
     [](...){}((analyze(std::make_shared<Analyzer<sizes>>(minArraySizePower,
                                                          maxArraySizePower,
@@ -17,7 +20,11 @@ template <size_t... sizes> createAnalyzers(size_t minArraySizePower,
 template <typename T>
 void analyze(std::shared_ptr<T> analyzer)
 {
-    //analyzer->test();
+    sequentialPlots.push_back({analyzer->getPayloadSize(),
+                               analyzer->sequentialAccess()});
+
+    randomPlots.push_back({analyzer->getPayloadSize(),
+                           analyzer->randomAccess()});
 }
 
 int main()
@@ -31,4 +38,18 @@ int main()
                                    maxArraySizePower,
                                    experimentsCount,
                                    accessCount);
+
+    //save data
+    std::string reportsPath = "./reports/";
+    std::string templatePath = reportsPath + "template.html";
+
+    Plotter::getInstance().plot("Sequential access",
+                               sequentialPlots,
+                               templatePath,
+                               reportsPath + "sequentialAccess.html");
+
+    Plotter::getInstance().plot("Random access",
+                           randomPlots,
+                           templatePath,
+                           reportsPath + "randomAccess.html");
 }
