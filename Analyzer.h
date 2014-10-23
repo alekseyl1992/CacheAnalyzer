@@ -2,6 +2,8 @@
 #define ANALYZER_H
 
 #include <iostream>
+#include <algorithm>
+#include <functional>
 #include <boost/preprocessor/repetition/repeat.hpp>
 #include "PlotData.h"
 #include "Measure.h"
@@ -24,7 +26,14 @@ private:
     };
 
 public:
-    Analyzer(size_t minArraySizePower, size_t maxArraySizePower, size_t experimentsCount)
+    Analyzer(size_t minArraySizePower,
+             size_t maxArraySizePower,
+             size_t experimentsCount,
+             size_t accessCount)
+        : minArraySizePower(minArraySizePower),
+          maxArraySizePower(maxArraySizePower),
+          experimentsCount(experimentsCount),
+          accessCount(accessCount / REPEAT_COUNT)
     {
 
     }
@@ -43,10 +52,10 @@ public:
                 #define CALL first = first->next;
                 BOOST_PP_REPEAT(REPEAT_COUNT, CALL, 0);
             }
-        });
+        }) / (accessCount * REPEAT_COUNT);
     }
 
-    PlotData sequentialAccess()
+    PlotData access(std::function<void(ArrayElement *, size_t)> linker)
     {
         PlotData plotData;
 
@@ -56,12 +65,8 @@ public:
             size_t arraySize = 1 << arraySizePower; //fast power of 2
             ArrayElement *first = new ArrayElement[arraySize];
 
-            //link sequentialy
-            ArrayElement *cur = first;
-            for (size_t i = 0; i < arraySize; ++i) {
-                cur->next = first + i;
-                ++cur;
-            }
+            //link elements
+            linker(first, arraySize);
 
             //measure averaged access time
             double time = 0;
@@ -78,11 +83,36 @@ public:
         return plotData;
     }
 
+    PlotData sequentialAccess()
+    {
+        return access([](ArrayElement *first, size_t arraySize) {
+            //link sequentialy
+            ArrayElement *cur = first;
+            for (size_t i = 0; i < arraySize - 1; ++i) {
+                cur->next = first + i;
+                ++cur;
+            }
+            cur->next = first;  // make a loop
+        });
+    }
+
     PlotData randomAccess()
     {
-        PlotData plotData;
+        return access([](ArrayElement *first, size_t arraySize) {
+            //link randomly all elements
+            std::vector<size_t> offsets(arraySize);
+            std::iota(offsets.begin(), offsets.end(), 0);
 
-        return plotData;
+            std::random_device rd;
+            std::mt19937 g(rd());
+            std::shuffle(offsets.begin(), offsets.end(), g);
+
+            ArrayElement *cur = first;
+            for (size_t i = 0; i < arraySize; ++i) {
+                cur->next = first + offsets[i];
+                ++cur;
+            }
+        });
     }
 
 private:
@@ -97,7 +127,7 @@ private:
     size_t minArraySizePower;
     size_t maxArraySizePower;
     size_t experimentsCount;  // per each array size
-    size_t accessCount;  // TODO: pass via c-tor
+    size_t accessCount;  //access count in 1 experiment
 };
 
 #endif // ANALYZER_H
