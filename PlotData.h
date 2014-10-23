@@ -7,7 +7,7 @@
 
 typedef std::vector<std::pair<double, size_t>> PlotData;
 struct Plot {
-    std::string label;
+    size_t payloadSize;
     PlotData data;
 };
 

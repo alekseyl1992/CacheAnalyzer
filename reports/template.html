@@ -10,8 +10,7 @@
 
 	$(function () {
 		var data = [];
-		data.push({label: "PAD=7", data: [[0.1, 1], [0.2, 2], [0.3, 3]]});
-		data.push({label: "PAD=15", data: [[0.2, 1], [0.4, 2], [0.5, 7]]});
+		%s
 		
 
 		$.plot("#placeholder", data, {
@@ -29,7 +28,7 @@
 <body>
 
 	<div id="header">
-		<h2>Cache Analyzer</h2>
+		<h2>Cache Analyzer: %s</h2>
 	</div>
 
 	<div id="content">

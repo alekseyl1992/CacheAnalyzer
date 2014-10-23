@@ -1,4 +1,9 @@
 #include "Plotter.h"
+
+#include <fstream>
+#include <sstream>
+#include <boost/format.hpp>
+
 Plotter *Plotter::instance = nullptr;
 
 Plotter &Plotter::getInstance()
@@ -14,19 +19,28 @@ void Plotter::plot(const std::string &name,
                    const std::string &templatePath,
                    const std::string &resultPath)
 {
-    //open template file
+    //read template file
+    std::ifstream t(templatePath);
+    std::stringstream buffer;
+    buffer << t.rdbuf();
 
-    //open new file
+    //prepare data
+    std::stringstream data;
 
-    //write header
+    for (auto &plot: plots) {
+        std::stringstream plotData;
+        for (auto &point: plot.data)
+            plotData << "[" << point.first << ", " << point.second << "], ";
 
-    //write data
+        data << "(data.push({label: "
+             << "PLS=" << plot.payloadSize
+             << ", data: " << "[" << plotData.str() << "]});";
+    }
 
-    //write footer
-
-    //save
-
-    //close
+    //write report
+    std::string reportStr = (boost::format(buffer.str()) % data % name).str();
+    std::ofstream report;
+    report.write(reportStr.c_str(), reportStr.size());
 }
 
 Plotter::Plotter()
