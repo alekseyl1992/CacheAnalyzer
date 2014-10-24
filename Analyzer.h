@@ -114,11 +114,11 @@ public:
             std::mt19937 g(rd());
             std::shuffle(offsets.begin(), offsets.end(), g);
 
-            ArrayElement *cur = first;
-            for (size_t i = 0; i < arraySize; ++i) {
-                cur->next = first + offsets[i];
-                ++cur;
+            //loop-free algorithm
+            for (size_t i = 0; i < arraySize - 1; ++i) {
+                (first + offsets[i])->next = first + offsets[i + 1];
             }
+            (first + offsets[arraySize - 1])->next = first + offsets[0];
         });
     }
 
