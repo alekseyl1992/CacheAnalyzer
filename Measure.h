@@ -3,7 +3,7 @@
 
 #include <chrono>
 
-template<typename TimeT = std::chrono::milliseconds>
+template<typename TimeT = std::chrono::nanoseconds>
 struct Measure
 {
     template<typename F, typename ...Args>

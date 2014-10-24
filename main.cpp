@@ -33,8 +33,8 @@ int main()
 {
     size_t minArraySizePower = 2;
     size_t maxArraySizePower = 20;
-    size_t experimentsCount = 10;
-    size_t accessCount = 1024;
+    size_t experimentsCount = 100;
+    size_t accessCount = 1024*REPEAT_COUNT;
 
     std::cout << "CacheAnalyzer started" << std::endl;
     std::cout << "---------------------" << std::endl;

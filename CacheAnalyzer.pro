@@ -12,7 +12,7 @@ HEADERS += \
     PlotData.h \
     Measure.h
 
-QMAKE_CXXFLAGS += -std=c++14
+QMAKE_CXXFLAGS += -std=c++1y -O0
 
 win32 {
     INCLUDEPATH += C:/Projects/Qt/boost_1_56_0
