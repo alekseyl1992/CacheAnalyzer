@@ -41,7 +41,7 @@ void Plotter::plot(const std::string &name,
     }
 
     //write report
-    std::string reportStr = (boost::format(buffer.str()) % data.str() % name).str();
+    std::string reportStr = (boost::format(buffer.str()) %name % data.str() % name).str();
 
     std::ofstream report(resultPath);
     report << reportStr;
