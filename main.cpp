@@ -20,11 +20,13 @@ void createAnalyzers(size_t minArraySizePower,
 template <typename T>
 void analyze(std::shared_ptr<T> analyzer)
 {
+    std::cout << "Analyzing with PLS: " << analyzer->getPayloadSize() << std::endl;
+
     sequentialPlots.push_back({analyzer->getPayloadSize(),
                                analyzer->sequentialAccess()});
 
-    randomPlots.push_back({analyzer->getPayloadSize(),
-                           analyzer->randomAccess()});
+    //randomPlots.push_back({analyzer->getPayloadSize(),
+    //                       analyzer->randomAccess()});
 }
 
 int main()
@@ -34,22 +36,32 @@ int main()
     size_t experimentsCount = 10;
     size_t accessCount = 1024;
 
+    std::cout << "CacheAnalyzer started" << std::endl;
+    std::cout << "---------------------" << std::endl;
+
     createAnalyzers<7, 15, 31, 63>(minArraySizePower,
                                    maxArraySizePower,
                                    experimentsCount,
                                    accessCount);
 
+    std::cout << "---------------------" << std::endl;
+
     //save data
     std::string reportsPath = "./reports/";
     std::string templatePath = reportsPath + "template.html";
 
+    std::cout << "Plotting sequential access" << std::endl;
     Plotter::getInstance().plot("Sequential access",
                                sequentialPlots,
                                templatePath,
                                reportsPath + "sequentialAccess.html");
 
-    Plotter::getInstance().plot("Random access",
-                           randomPlots,
-                           templatePath,
-                           reportsPath + "randomAccess.html");
+    //std::cout << "Plotting random access" << std::endl;
+    //Plotter::getInstance().plot("Random access",
+    //                       randomPlots,
+    //                       templatePath,
+    //                       reportsPath + "randomAccess.html");
+
+    std::cout << "---------------------" << std::endl;
+    std::cout << "CacheAnalyzer finished" << std::endl;
 }

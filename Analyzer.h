@@ -5,11 +5,15 @@
 #include <algorithm>
 #include <functional>
 #include <stdint.h>
+#include <thread>
+#include <chrono>
 #include <boost/preprocessor/repetition/repeat.hpp>
 #include "PlotData.h"
 #include "Measure.h"
 
-#define REPEAT_COUNT 1 //256
+using namespace std::chrono_literals;
+
+#define REPEAT_COUNT 256
 
 
 template <size_t payloadSize>
@@ -48,12 +52,14 @@ public:
 
     double measureAccessTime(class ArrayElement *first, size_t arraySize)
     {
-        return Measure<>::execution([&]() {
+        double measuredTime =  Measure<>::execution([&]() {
             for (size_t i = 0; i < accessCount; ++i) {
-                #define CALL first = first->next;
-                BOOST_PP_REPEAT(REPEAT_COUNT, CALL, 0);
+                #define CALL(z, n, el) el = el->next;
+                BOOST_PP_REPEAT(REPEAT_COUNT, CALL, first);
             }
-        }) / (accessCount * REPEAT_COUNT);
+        });
+
+        return measuredTime / (accessCount * REPEAT_COUNT);
     }
 
     PlotData access(std::function<void(ArrayElement *, size_t)> linker)

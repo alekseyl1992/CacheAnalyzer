@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <sstream>
+#include <string>
 #include <boost/format.hpp>
 
 Plotter *Plotter::instance = nullptr;
@@ -23,6 +24,7 @@ void Plotter::plot(const std::string &name,
     std::ifstream t(templatePath);
     std::stringstream buffer;
     buffer << t.rdbuf();
+    t.close();
 
     //prepare data
     std::stringstream data;
@@ -30,17 +32,20 @@ void Plotter::plot(const std::string &name,
     for (auto &plot: plots) {
         std::stringstream plotData;
         for (auto &point: plot.data)
-            plotData << "[" << point.first << ", " << point.second << "], ";
+            plotData << "[" << point.second << ", " << point.first << "], ";
 
-        data << "(data.push({label: "
-             << "PLS=" << plot.payloadSize
-             << ", data: " << "[" << plotData.str() << "]});";
+        data << (boost::format(R"(data.push({label: "PLS=%s", data: [%s]});)")
+                % plot.payloadSize
+                % plotData.str()).str();
+        data << std::endl;
     }
 
     //write report
-    std::string reportStr = (boost::format(buffer.str()) % data % name).str();
-    std::ofstream report;
-    report.write(reportStr.c_str(), reportStr.size());
+    std::string reportStr = (boost::format(buffer.str()) % data.str() % name).str();
+
+    std::ofstream report(resultPath);
+    report << reportStr;
+    report.close();
 }
 
 Plotter::Plotter()
