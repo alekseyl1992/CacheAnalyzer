@@ -25,21 +25,21 @@ void analyze(std::shared_ptr<T> analyzer)
     sequentialPlots.push_back({analyzer->getPayloadSize(),
                                analyzer->sequentialAccess()});
 
-    //randomPlots.push_back({analyzer->getPayloadSize(),
-    //                       analyzer->randomAccess()});
+    randomPlots.push_back({analyzer->getPayloadSize(),
+                           analyzer->randomAccess()});
 }
 
 int main()
 {
     size_t minArraySizePower = 2;
-    size_t maxArraySizePower = 20;
+    size_t maxArraySizePower = 22;
     size_t experimentsCount = 100;
     size_t accessCount = 1024*REPEAT_COUNT;
 
     std::cout << "CacheAnalyzer started" << std::endl;
     std::cout << "---------------------" << std::endl;
 
-    createAnalyzers<7, 15, 31, 63>(minArraySizePower,
+    createAnalyzers<7, 15, 31, 63, 127, 255>(minArraySizePower,
                                    maxArraySizePower,
                                    experimentsCount,
                                    accessCount);
@@ -56,11 +56,11 @@ int main()
                                templatePath,
                                reportsPath + "sequentialAccess.html");
 
-    //std::cout << "Plotting random access" << std::endl;
-    //Plotter::getInstance().plot("Random access",
-    //                       randomPlots,
-    //                       templatePath,
-    //                       reportsPath + "randomAccess.html");
+    std::cout << "Plotting random access" << std::endl;
+    Plotter::getInstance().plot("Random access",
+                           randomPlots,
+                           templatePath,
+                           reportsPath + "randomAccess.html");
 
     std::cout << "---------------------" << std::endl;
     std::cout << "CacheAnalyzer finished" << std::endl;

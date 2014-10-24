@@ -115,7 +115,7 @@ public:
             std::shuffle(offsets.begin(), offsets.end(), g);
 
             ArrayElement *cur = first;
-            for (size_t i = 1; i < arraySize; ++i) {
+            for (size_t i = 0; i < arraySize; ++i) {
                 cur->next = first + offsets[i];
                 ++cur;
             }
